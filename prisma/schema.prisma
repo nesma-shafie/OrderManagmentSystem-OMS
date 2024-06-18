@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+PENDING
+COMPLETED
+CANCELLED
+}
+// Create the following entities:
+// ■ Users: userId, name, email, password, address, etc
+// ■ Products: productId, name, description, price, stock, etc
+// ■ Orders: orderId, orderDate, status, etc
+// ■ Cart: cartId, etc
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  name     String   @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  address     String   @db.VarChar(255)
+  email   String   @unique
+}
+
+model Products {
+  id        Int      @id @default(autoincrement())
+  name     String   @db.VarChar(255)
+  description     String   @db.VarChar(255)
+  price        Int
+  stock        Int
+}
+
+model Orders {
+  id        Int      @id @default(autoincrement())
+  orderDate DateTime @default(now())
+  status    OrderStatus @default(PENDING)
+}
+
+
+model Carts {
+  id        Int      @id @default(autoincrement())
+}
