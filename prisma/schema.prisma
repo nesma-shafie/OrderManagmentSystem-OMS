@@ -14,10 +14,11 @@ datasource db {
 }
 
 enum OrderStatus {
-PENDING
-COMPLETED
-CANCELLED
+  PENDING
+  COMPLETED
+  CANCELLED
 }
+
 // Create the following entities:
 // ■ Users: userId, name, email, password, address, etc
 // ■ Products: productId, name, description, price, stock, etc
@@ -25,28 +26,37 @@ CANCELLED
 // ■ Cart: cartId, etc
 
 model Users {
-  id        Int      @id @default(autoincrement())
+  id       String      @id @default(uuid())
   name     String   @db.VarChar(255)
-  password     String   @db.VarChar(255)
-  address     String   @db.VarChar(255)
-  email   String   @unique
+  password String   @db.VarChar(255)
+  address  String   @db.VarChar(255)
+  email    String   @unique
+  cart     Carts?
+  orders   Orders[]
+}
+
+model Carts {
+  id     String      @id @default(uuid())
+  userID String   @unique
+  user   Users @relation(fields: [userID], references: [id])
+  ProductsList Products[]
 }
 
 model Products {
-  id        Int      @id @default(autoincrement())
-  name     String   @db.VarChar(255)
-  description     String   @db.VarChar(255)
-  price        Int
-  stock        Int
+  id          String      @id @default(uuid())
+  name        String  @db.VarChar(255)
+  description String  @db.VarChar(255)
+  price       Int
+  stock       Int
+  Orders      Orders[] 
+  Carts       Carts[]
 }
 
 model Orders {
-  id        Int      @id @default(autoincrement())
-  orderDate DateTime @default(now())
-  status    OrderStatus @default(PENDING)
-}
-
-
-model Carts {
-  id        Int      @id @default(autoincrement())
+  id           String      @id @default(uuid())
+  orderDate    DateTime    @default(now())
+  status       OrderStatus @default(PENDING)
+  Users        Users       @relation(fields: [usersId], references: [id])
+  usersId      String
+  productsList Products[]
 }
