@@ -3,9 +3,14 @@ import { faker } from '@faker-js/faker';
 // initialize the Prisma Client
 const prisma = new PrismaClient();
 
+function getRandomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 async function main() {
-  await prisma.users.deleteMany({});
   await prisma.carts.deleteMany({});
+  await prisma.users.deleteMany({});
+  await prisma.products.deleteMany({});
   // eslint-disable-next-line prefer-const
   let usersID = [];
   let id;
@@ -33,6 +38,17 @@ async function main() {
       },
     });
   }
+  // Insert products into database
+  const products = Array.from({ length: 20 }, () => ({
+    name: faker.commerce.productName(),
+    description: faker.lorem.sentence(),
+    price: getRandomInt(20, 1000), // Generate random price
+    stock: getRandomInt(20, 1000), // Generate random stock
+  }));
+
+  await prisma.products.createMany({
+    data: products,
+  });
 }
 
 main()

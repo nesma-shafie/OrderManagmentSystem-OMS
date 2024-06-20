@@ -3,7 +3,7 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+ 
 generator client {
   provider = "prisma-client-js"
 }
@@ -39,7 +39,16 @@ model Carts {
   id     String      @id @default(uuid())
   userID String   @unique
   user   Users @relation(fields: [userID], references: [id])
-  ProductsList Products[]
+  ProductsList CartProduct[]
+}
+
+model CartProduct {
+  cartId    String   
+  productId String   
+  quantity  Int      @default(1)
+  cart      Carts    @relation(fields: [cartId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
+  @@id([cartId, productId])
 }
 
 model Products {
@@ -48,8 +57,8 @@ model Products {
   description String  @db.VarChar(255)
   price       Int
   stock       Int
-  Orders      Orders[] 
-  Carts       Carts[]
+  Orders      OrderProduct[] 
+  Carts       CartProduct[]
 }
 
 model Orders {
@@ -58,5 +67,14 @@ model Orders {
   status       OrderStatus @default(PENDING)
   Users        Users       @relation(fields: [usersId], references: [id])
   usersId      String
-  productsList Products[]
+  productsList OrderProduct[]
+}
+
+model OrderProduct {
+  orderId    String   
+  productId String   
+  quantity  Int      @default(1)
+  order      Orders    @relation(fields: [orderId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
+  @@id([productId, orderId])
 }
