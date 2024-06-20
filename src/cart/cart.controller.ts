@@ -14,6 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
 import AddProductDto from './DTO/addProduct.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import getUserCartDto from './DTO/getUserCart.dto';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import UpdateCartDto from './DTO/updateCart.dto';
 @ApiTags('cart')
 @Controller('cart')
 export class CartController {
@@ -31,8 +33,12 @@ export class CartController {
     }
   }
   @Put('update')
-  updateUserCart() {
-    return [];
+  updateUserCart(@Body() UpdateCartDto: UpdateCartDto) {
+    try {
+      return this.CartService.updateUserCart(UpdateCartDto);
+    } catch (e) {
+      return e;
+    }
   }
   @Delete('remove')
   removeFromUserCart(@Body() AddProductDto: AddProductDto) {
