@@ -79,3 +79,9 @@ model OrderProduct {
   product   Products @relation(fields: [productId], references: [id])
   @@id([productId, orderId])
 }
+
+model Coupons {
+  cupon    String   @id 
+  discountPercentage Int   
+  expirationDate    DateTime
+}

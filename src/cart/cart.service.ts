@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import AddProductDto from './DTO/addProduct.dto';
 import getUserCartDto from './DTO/getUserCart.dto';
@@ -38,7 +44,7 @@ export class CartService {
     if (!requiredProduct) throw new NotFoundException('product not found');
     ////if there is no stock throw exception
     if (requiredProduct.stock === 0)
-      throw new NotFoundException('product not available');
+      throw new ConflictException('product not available');
     ////get the product from the user cart
     const userCart = await this.prisma.carts.findUnique({
       where: {
@@ -92,7 +98,7 @@ export class CartService {
       },
     });
     if (userCart.ProductsList.length === 0)
-      throw new NotFoundException('product not found in your cart');
+      throw new ConflictException('product not found in your cart');
     else
       return await this.prisma.cartProduct.delete({
         where: {

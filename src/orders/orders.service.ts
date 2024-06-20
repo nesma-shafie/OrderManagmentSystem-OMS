@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import CreateOrderDto from './DTO/createOrder.dto';
 import orderIdDto from './DTO/orderId.dto';
 import updateOrderStatusDto from './DTO/updateOrderStatus.dto';
+import ApplyCuponDto from './DTO/applyCupon.dto';
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
@@ -22,12 +28,12 @@ export class OrdersService {
       },
     });
     if (userCart.ProductsList.length === 0)
-      throw new NotFoundException('your cart is empty');
+      throw new ConflictException('your cart is empty');
     const products = userCart.ProductsList;
     ////check if all products is available
     for (let i = 0; i < products.length; i++) {
       if (products[i].quantity > products[i].product.stock)
-        throw new NotFoundException(
+        throw new ConflictException(
           `required quantity from product ${products[i].product.name} with id ${products[i].product.id} is not available`,
         );
       products[i].product.stock -= products[i].quantity;
@@ -118,7 +124,7 @@ export class OrdersService {
     });
     if (!order) throw new NotFoundException('order not found');
     if (order.status === 'CANCELLED' || order.status === 'COMPLETED')
-      throw new NotFoundException(
+      throw new BadRequestException(
         `the order is already ${order.status} you can not change its status`,
       );
     if (status.status === 'CANCELLED') {
@@ -144,6 +150,52 @@ export class OrdersService {
       select: {
         id: true,
         status: true,
+      },
+    });
+  }
+
+  async applyCoupnToOrder(ApplyCuponDto: ApplyCuponDto) {
+    const order = await this.prisma.orders.findUnique({
+      where: {
+        id: ApplyCuponDto.orderId,
+      },
+      select: {
+        id: true,
+        status: true,
+        totalPrice: true,
+      },
+    });
+
+    if (order.status === 'COMPLETED' || order.status === 'CANCELLED')
+      throw new BadRequestException(
+        `the order is ${order.status} you can not applty cupon`,
+      );
+    const cupon = await this.prisma.coupons.findUnique({
+      where: {
+        cupon: ApplyCuponDto.coupon,
+      },
+      select: {
+        discountPercentage: true,
+        expirationDate: true,
+      },
+    });
+    if (!cupon) throw new NotFoundException(`the cupon is not found`);
+    if (cupon.expirationDate < new Date()) {
+      throw new BadRequestException(
+        'this cupon is expired you can not use it.try another one',
+      );
+    }
+    return await this.prisma.orders.update({
+      where: {
+        id: ApplyCuponDto.orderId,
+      },
+      data: {
+        totalPrice: (order.totalPrice * (100 - cupon.discountPercentage)) / 100,
+      },
+      select: {
+        id: true,
+        status: true,
+        totalPrice: true,
       },
     });
   }

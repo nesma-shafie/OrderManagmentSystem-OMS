@@ -7,6 +7,8 @@ import CreateOrderDto from './DTO/createOrder.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import orderIdDto from './DTO/orderId.dto';
 import updateOrderStatusDto from './DTO/updateOrderStatus.dto';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import ApplyCuponDto from './DTO/applyCupon.dto';
 @ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
@@ -28,8 +30,8 @@ export class OrdersController {
     }
   }
   @Post('apply-coupon')
-  applyCoupnToOrder() {
-    return [];
+  applyCoupnToOrder(@Body() ApplyCuponDto: ApplyCuponDto) {
+    return this.OrdersService.applyCoupnToOrder(ApplyCuponDto);
   }
   @Put(':orderId/status')
   updateOrderStatus(
