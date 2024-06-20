@@ -1,15 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { UsersService } from './users.service';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import UserIdDto from './DTO/userId.dto';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
+  constructor(private readonly UsersService: UsersService) {}
   @Get(':userId/orders')
-  @ApiResponse({
-    status: 200,
-    description: 'The record has been successfully created.',
-  })
-  @ApiResponse({ status: 400, description: 'Forbidden.' })
-  getUserOrders() {
-    return [];
+  getUserOrders(@Param() UserIdDto: UserIdDto) {
+    try {
+      return this.UsersService.getUserOrders(UserIdDto);
+    } catch (e) {
+      return e;
+    }
   }
 }
