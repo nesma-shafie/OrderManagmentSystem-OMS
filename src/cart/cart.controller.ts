@@ -12,13 +12,15 @@ import { CartService } from './cart.service';
 import { ApiTags } from '@nestjs/swagger';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import AddProductDto from './DTO/addProduct.dto';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import getUserCartDto from './DTO/getUserCart.dto';
 @ApiTags('cart')
 @Controller('cart')
 export class CartController {
   constructor(private readonly CartService: CartService) {}
   @Get(':userId')
-  getUserCart(@Param('userId') userId: string) {
-    return this.CartService.getUserCart(userId);
+  getUserCart(@Param() getUserCartDto: getUserCartDto) {
+    return this.CartService.getUserCart(getUserCartDto);
   }
   @Post('add')
   addToUserCart(@Body() AddProductDto: AddProductDto) {

@@ -24,16 +24,40 @@ export class OrdersService {
     if (userCart.ProductsList.length === 0)
       throw new NotFoundException('your cart is empty');
     const products = userCart.ProductsList;
+    ////check if all products is available
+    for (let i = 0; i < products.length; i++) {
+      if (products[i].quantity > products[i].product.stock)
+        throw new NotFoundException(
+          `required quantity from product ${products[i].product.name} with id ${products[i].product.id} is not available`,
+        );
+      products[i].product.stock -= products[i].quantity;
+    }
+    /////reduce the products stock
+    await Promise.all(
+      products.map((product) =>
+        this.prisma.products.update({
+          where: { id: product.product.id },
+          data: {
+            stock: product.product.stock,
+          },
+        }),
+      ),
+    );
     ////remove all products from the cart
     await this.prisma.cartProduct.deleteMany({
       where: {
         cartId: userCart.id,
       },
     });
+    let totalPrice = 0;
+    products.forEach(
+      (product) => (totalPrice += product.product.price * product.quantity),
+    );
     ////crete the order
     return await this.prisma.orders.create({
       data: {
         usersId: CreateOrderDto.userId,
+        totalPrice: totalPrice,
         productsList: {
           create: products.map((cartProduct) => ({
             product: { connect: { id: cartProduct.product.id } },
@@ -53,6 +77,7 @@ export class OrdersService {
         id: true,
         orderDate: true,
         status: true,
+        totalPrice: true,
         Users: {
           select: {
             name: true,
@@ -82,6 +107,12 @@ export class OrdersService {
         id: orderId.orderId,
       },
       select: {
+        productsList: {
+          select: {
+            product: true,
+            quantity: true,
+          },
+        },
         status: true,
       },
     });
@@ -90,6 +121,19 @@ export class OrdersService {
       throw new NotFoundException(
         `the order is already ${order.status} you can not change its status`,
       );
+    if (status.status === 'CANCELLED') {
+      const products = order.productsList;
+      await Promise.all(
+        products.map((product) =>
+          this.prisma.products.update({
+            where: { id: product.product.id },
+            data: {
+              stock: product.product.stock + product.quantity,
+            },
+          }),
+        ),
+      );
+    }
     return await this.prisma.orders.update({
       where: {
         id: orderId.orderId,

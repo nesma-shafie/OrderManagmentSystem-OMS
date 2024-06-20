@@ -65,6 +65,7 @@ model Orders {
   id           String      @id @default(uuid())
   orderDate    DateTime    @default(now())
   status       OrderStatus @default(PENDING)
+  totalPrice    Int         @default(0)
   Users        Users       @relation(fields: [usersId], references: [id])
   usersId      String
   productsList OrderProduct[]
