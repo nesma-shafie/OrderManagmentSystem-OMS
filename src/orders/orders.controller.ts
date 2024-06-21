@@ -79,8 +79,7 @@ export class OrdersController {
   @ApiResponse({ status: 404, description: 'Coupon or order not found' })
   @ApiResponse({
     status: 400,
-    description:
-      'The order is completed or cancelled, you cannot apply the coupon',
+    description: 'The order is completed or cancelled or the coupon is expired',
   })
   applyCoupnToOrder(@Body() ApplyCuponDto: ApplyCuponDto) {
     return this.OrdersService.applyCoupnToOrder(ApplyCuponDto);

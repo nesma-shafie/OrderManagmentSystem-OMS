@@ -8,9 +8,13 @@ function getRandomInt(min: number, max: number): number {
 }
 
 async function main() {
+  await prisma.cartProduct.deleteMany({});
+  await prisma.orderProduct.deleteMany({});
+  await prisma.orders.deleteMany({});
+  await prisma.products.deleteMany({});
   await prisma.carts.deleteMany({});
   await prisma.users.deleteMany({});
-  await prisma.products.deleteMany({});
+  await prisma.coupons.deleteMany({});
   // eslint-disable-next-line prefer-const
   let usersID = [];
   let id;
