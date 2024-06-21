@@ -52,7 +52,7 @@ export class CartController {
     description: 'The product has been successfully added to the cart.',
   })
   @ApiResponse({ status: 404, description: 'Product not found' })
-  @ApiResponse({ status: 409, description: 'Product not available' })
+  @ApiResponse({ status: 409, description: 'Product not available or product is already added in your cart' })
   addToUserCart(@Body() AddProductDto: AddProductDto) {
     try {
       return this.CartService.addToUserCart(AddProductDto);

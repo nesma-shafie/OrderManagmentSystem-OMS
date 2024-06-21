@@ -63,18 +63,8 @@ export class CartService {
     });
 
     if (userCart.ProductsList.length !== 0)
-      //if the product already exit in the cart update quantity
-      return await this.prisma.cartProduct.update({
-        where: {
-          cartId_productId: {
-            cartId: userCart.id,
-            productId: AddProductDto.productId,
-          },
-        },
-        data: {
-          quantity: { increment: 1 },
-        },
-      });
+      //if the product already exit in the cart error
+      throw new ConflictException('product is already added in your cart');
     ////if the product does not exit in the cart add it to th cart
     else
       return await this.prisma.cartProduct.create({
