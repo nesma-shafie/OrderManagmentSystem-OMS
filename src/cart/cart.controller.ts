@@ -69,7 +69,11 @@ export class CartController {
     status: 200,
     description: 'The product quantity has been successfully updated.',
   })
-  @ApiResponse({ status: 404, description: 'Product not found in the cart' })
+  @ApiResponse({ status: 404, description: 'Product not found ' })
+  @ApiResponse({
+    status: 409,
+    description: 'the product is not found in yous cart add it first ',
+  })
   updateUserCart(@Body() UpdateCartDto: UpdateCartDto) {
     try {
       return this.CartService.updateUserCart(UpdateCartDto);
@@ -84,7 +88,7 @@ export class CartController {
     status: 200,
     description: 'The product has been successfully removed from the cart.',
   })
-  @ApiResponse({ status: 404, description: 'Product not found in the cart' })
+  @ApiResponse({ status: 409, description: 'Product not found in the cart' })
   removeFromUserCart(@Body() AddProductDto: AddProductDto) {
     try {
       return this.CartService.removeFromUserCart(AddProductDto);

@@ -134,7 +134,7 @@ export class CartService {
       },
     });
     if (userCart.ProductsList.length === 0)
-      throw new BadRequestException(
+      throw new ConflictException(
         'the product is not found in yous cart add it first',
       );
     if (UpdateCartDto.update === 'Increase')
