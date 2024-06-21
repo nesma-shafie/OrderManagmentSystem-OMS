@@ -85,9 +85,100 @@ $ npm run test:cov
 ## API Documentation
   The API documentation is generated using Swagger. After starting the application, you can access the documentation at http://localhost:3000/api.
 
-## Endpoints   
-1. **cart APIs**: <img src="https://web-design-india.com/wp-content/uploads/2017/09/ecommerce-cart-gif.gif" width="50" alt="Nest Logo" />
 
+## Endpoints
+
+### 1. **Cart APIs**
+#### 1.1. Add To Cart
+- **Endpoint**: `/api/cart/add`
+- **Method**: POST
+- **Description**: Adds a product to the user's cart.
+- **Request Body**
+  ```json
+  {
+    "userId": string(UUID),
+    "productId": string(UUID)
+  }
+  
+#### 1.2. Update Cart
+- **Endpoint**: `/api/cart/update`
+- **Method**: PUT
+- **Description**: increase or decrease the product quantity in your cart by 1.
+- **Request Body**
+  ```json
+  {
+     "userId": string(UUID),
+    "productId": string(UUID),
+    "update":"Decrease" or "Increase" 
+  }
+
+#### 1.3. Remove From Cart
+- **Endpoint**: `/api/cart/remove`
+- **Method**: DELETE
+- **Description**: remove product from your cart.
+- **Request Body**
+  ```json
+  {
+    "userId": string(UUID),
+    "productId": string(UUID)"
+  }
+#### 1.4. View Cart
+- **Endpoint**: `/api/cart/:userId`
+- **Method**: GET
+- **Description**: view all products in your cart .
+- **Request Body**
+  ```json
+  {
+    "userId": string(UUID),
+  }
+
+### 2. **oredr APIs**:
+#### 2.1. Create Order
+- **Endpoint**: `/api/orders`
+- **Method**: POST
+- **Description**: create order with the products in your cart and make it pending and reduce the stock of the products.
+- **Request Body**
+  ```json
+  {
+    "userId": string(UUID),
+  }
+  
+#### 2.2. Get Order by ID
+- **Endpoint**: `/api/orders/:orderIde`
+- **Method**: GET
+- **Description**: view all products in your order ,status and total price.
+
+#### 2.3. Update Order Status:
+- **Endpoint**: `/api/orders/:orderId/status`
+- **Method**: PUT
+- **Description**: mark the order as completed or cancelled.
+- **Request Body**
+  ```json
+  {
+     "status":"CANCELLED" or "COMPLETED"
+  }
+  
+#### 2.4. Apply Coupon
+- **Endpoint**: `/api/orders/apply-coupon`
+- **Method**: POST
+- **Description**: apply coupon to take dicount to your order before the expiretion date of the coupon.
+- **Request Body**
+  ```json
+  {
+    "orderId": string(UUID),
+    "coupon" : string
+  }
+
+### 3. **User APIs**:
+#### 3.1. get User Orders
+- **Endpoint**: `/api/users/:userId/orders`
+- **Method**: GET
+- **Description**: get the history of the user orders with details.
+- **Request Body**
+  ```json
+  {
+    "userId": string(UUID),
+  }
 
 ## License
 
